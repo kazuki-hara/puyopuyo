@@ -1,0 +1,30 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+    <title>ぷよぷよのスコア</title>
+</head>
+<body>
+    <h1>ぷよぷよのスコアランキング</h1>
+    <p>created by Kazuki Hara</p>
+    <table border="1">
+        <tr>
+          <th>ランク</th>
+          <th>名前</th>
+          <th>スコア</th>
+          <th>日時</th>
+        </tr>
+        {% for result in result_list %}
+        <tr>
+          <td>{{ result.rank }}</td>
+          <td>{{ result.username }}</td>
+          <td>{{ result.score }}</td>
+          <td>{{ result.date }}</td>
+        </tr>
+        {% endfor %}
+      </table>
+</body>
+</html>
