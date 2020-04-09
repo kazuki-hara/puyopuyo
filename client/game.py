@@ -17,9 +17,9 @@ class Game:
         self.message = ''
         self.debug_mode = debug
 
-
+    
+    # 背景のロード
     def load_background_image(self):
-        # 背景
         background_image = pygame.image.load('img/background.jpg').convert()
         self.background_image = pygame.transform.scale(background_image, (WIDTH, HEIGHT))
 
@@ -65,13 +65,13 @@ class Game:
             if self.stage.combo > 0:
                 show_combo(screen, self.stage.combo)
         elif self.scene == 4:
-            show_result(screen, self.stage, self.message)
+            show_game_over(screen)
 
 
     # キー入力
     def pushed_key(self, events):
         for event in events:
-            if event.type == pygame.QUIT:
+            if event.type == pygame.QUIT or self.scene == 5:
                 pygame.quit()
                 sys.exit()
             if event.type == pygame.KEYDOWN:
@@ -109,5 +109,10 @@ class Game:
             else:
                 next_scene = self.puyo.stop_puyo(self.stage)
             self.scene = next_scene
-
+        elif self.scene == 4:
+            flag = self.user.show_result(self.stage, self.message)
+            if flag == 0:
+                self.scene = 5
+            else:
+                self.__init__(self.debug_mode)
 

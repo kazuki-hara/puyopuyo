@@ -5,7 +5,7 @@ import sys
 from game import *
 from client import *
 
-
+ 
 DEBUG = True
 
 
