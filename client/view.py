@@ -5,7 +5,7 @@ import PySimpleGUI as sg
 
 class Puyo:
     def __init__(self, color, pos_x, pos_y):
-        self.color = puyo_color[color-1]
+        self.color = color-1
         self.pos_y = pos_y
         self.pos_x = pos_x
 
@@ -49,15 +49,10 @@ def show_falling_puyo(screen, control_puyo):
         if control_puyo.position[i][1] >= 2:
             puyo = Puyo(control_puyo.color[i], control_puyo.position[i][0], control_puyo.position[i][1])
             show_puyo(screen, puyo)
-    
-
 
 
 # ぷよの色
-puyo_color: int = [[180,0,0],[50,170,50],[10,25,140],[145,116,25]]
-
-#　ぷよの半径
-radius = 23
+puyo_color: int = [[180,0,0],[50,170,50],[10,25,140],[145,116,25],[100,100,100]]
 
 
 # ぷよ１つ１つの表示とデザイン
@@ -65,9 +60,14 @@ def show_puyo(screen, puyo):
     color = puyo.color
     pos_x = puyo.pos_x
     pos_y = puyo.pos_y
-    draw_pos_x = 105 + pos_x * 50
-    draw_pos_y = 595 - (13- pos_y) * 50
-    pygame.draw.circle(screen, color, (draw_pos_x, draw_pos_y), radius)
+    if color == 4:
+        draw_pos_x = 105 + pos_x * 50 - 22
+        draw_pos_y = 595 - (13- pos_y) * 50 - 22
+        pygame.draw.rect(screen, puyo_color[color], (draw_pos_x,draw_pos_y, 44, 44))
+    else:
+        draw_pos_x = 105 + pos_x * 50
+        draw_pos_y = 595 - (13- pos_y) * 50
+        pygame.draw.circle(screen, puyo_color[color], (draw_pos_x, draw_pos_y), 23)
 
 
 # 次に落ちてくるぷよを表示
@@ -78,12 +78,8 @@ def show_next_puyo(screen, control_puyo, scene):
     else:
         next_puyo1_color = control_puyo.next_puyo1_color
         next_puyo2_color = control_puyo.next_puyo2_color
-
-    # next_puyo1_color
     pygame.draw.circle(screen, puyo_color[next_puyo1_color[0]-1], (420, 100), 20)
     pygame.draw.circle(screen, puyo_color[next_puyo1_color[1]-1], (420, 50), 20)
-
-    # next_puyo2_color
     pygame.draw.circle(screen, puyo_color[next_puyo2_color[0]-1], (440, 210), 20)
     pygame.draw.circle(screen, puyo_color[next_puyo2_color[1]-1], (440, 160), 20)
 
