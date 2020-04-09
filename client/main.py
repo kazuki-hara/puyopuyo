@@ -6,7 +6,7 @@ from game import *
 from client import *
 
  
-DEBUG = True
+DEBUG = False
 
 
 def main():
@@ -14,7 +14,7 @@ def main():
     game = Game(DEBUG)
     pygame.init() 
     screen = pygame.display.set_mode((WIDTH, HEIGHT)) 
-    pygame.display.set_caption("ぷよぷよ")
+    pygame.display.set_caption("ぷよぷよ?")
     clock = pygame.time.Clock()
     game.load_background_image()
 
