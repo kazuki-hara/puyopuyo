@@ -60,11 +60,12 @@ class User:
             if rank == 0 or rank == -1:
                 message = '残念ながらランキング外です...'
             else:
-                message = + str(rank) + ' 位でした!'
+                message = str(rank) + ' 位でした!'
             return message
         except:
-            messagae = ''
+            message = 'サーバに接続できませんでした...'
             return message
+
 
 
 # サーバー上のスコアデータを全て削除
