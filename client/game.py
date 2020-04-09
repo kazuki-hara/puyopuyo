@@ -5,14 +5,17 @@ import sys
 
 WIDTH = 480
 HEIGHT = 640
-
+FPS = 60
+UPDATE_TIMES = 5
 
 class Game:
     def __init__(self, debug):
         self.user = User()
         self.stage = Stage()
         self.puyo = ControlPuyo()
-        self.fps = 5
+        self.fps = FPS
+        self.update_rate = int(self.fps/UPDATE_TIMES)
+        self.frame = 0
         self.scene = 0
         self.message = ''
         self.debug_mode = debug
@@ -26,25 +29,29 @@ class Game:
 
     # 次のフレームでの処理
     def update(self):
-        self.fps = 5
+        self.frame += 1
+        if self.frame == FPS:
+            self.frame = 0
 
-        # ぷよが上から落ちてくる
-        if self.scene == 1:
-            self.puyo.fall_puyo()
-
-        # ぷよを消去する ->　消去したらscene3へ、消去しなかったらscene1へ
-        elif self.scene == 2:
-            next_scene = self.stage.delete_group()
-            self.scene = next_scene
+        if self.frame % self.update_rate ==0:
+            # ぷよが上から落ちてくる
             if self.scene == 1:
-                self.stage.combo = 0
-                self.stage.all_clear()
-                self.puyo.update(self.stage)
+                self.puyo.fall_puyo()
 
-        # ぷよが消えた分を下に詰める ->　詰め終わったらscene2へ
-        elif self.scene == 3:
-            self.stage.fall_puyo()
-            self.scene = 2
+            # ぷよを消去する ->　消去したらscene3へ、消去しなかったらscene1へ
+            elif self.scene == 2:
+                next_scene = self.stage.delete_group()
+                self.scene = next_scene
+                if self.scene == 1:
+                    self.stage.combo = 0
+                    self.stage.all_clear()
+                    self.stage.block()
+                    self.puyo.update(self.stage)
+
+            # ぷよが消えた分を下に詰める ->　詰め終わったらscene2へ
+            elif self.scene == 3:
+                self.stage.fall_puyo()
+                self.scene = 2
 
 
     # 描写
@@ -83,9 +90,9 @@ class Game:
                         self.puyo.turn_left(self.stage)
                     if event.key == pygame.K_d:
                         self.puyo.turn_right(self.stage)
-                    if event.key == pygame.K_z:
+                    if event.key == pygame.K_LEFT:
                         self.puyo.move_left(self.stage)
-                    if event.key == pygame.K_c:
+                    if event.key == pygame.K_RIGHT:
                         self.puyo.move_right(self.stage)
                 elif self.scene == 4:
                     if event.key == pygame.K_SPACE:
@@ -94,9 +101,11 @@ class Game:
 
     # キー長押し
     def pressed_key(self, pressed_keys):
-        if self.scene == 1:
-            if pressed_keys[pygame.K_SPACE]:
-                self.fps = 10
+        if self.scene == 1 and pressed_keys[pygame.K_SPACE]:
+            self.update_rate = int(self.fps/UPDATE_TIMES/4)
+        else:
+            self.update_rate = int(self.fps / UPDATE_TIMES)
+
 
 
     # 判定
