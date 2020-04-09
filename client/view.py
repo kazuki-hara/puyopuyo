@@ -1,6 +1,7 @@
 from model import Stage,ControlPuyo
 import pygame
-
+import tkinter
+import PySimpleGUI as sg
 
 class Puyo:
     def __init__(self, color, pos_x, pos_y):
@@ -84,7 +85,7 @@ def show_next_puyo(screen, control_puyo, scene):
 
     # next_puyo2_color
     pygame.draw.circle(screen, puyo_color[next_puyo2_color[0]-1], (440, 210), 20)
-    pygame.draw.circle(screen, puyo_color[next_puyo2_color[0]-1], (440, 160), 20)
+    pygame.draw.circle(screen, puyo_color[next_puyo2_color[1]-1], (440, 160), 20)
 
 
 # Press SPACE to Start!
@@ -112,16 +113,17 @@ def show_score(screen, score):
 
 
 # ゲームオーバー時に結果を表示
-def show_result(screen, stage, message):
+def show_game_over(screen):
     game_over_font = pygame.font.SysFont(None, 100)
     game_over_text = game_over_font.render("GAME OVER", True, (255,0,0))
     screen.blit(game_over_text, (32,200))
-    score = stage.score
-    score_font = pygame.font.SysFont(None, 100)
-    score_text = score_font.render('score: ' + str(stage.score), True, (255, 0,0))
-    screen.blit(score_text, (60,270))
-    rank_font = pygame.font.SysFont(None, 80)
-    rank_text = rank_font.render(message, True, (255, 0,0))
-    screen.blit(rank_text, (45,340))
 
 
+
+
+
+
+
+
+if __name__=="__main__":
+    enter_username()
