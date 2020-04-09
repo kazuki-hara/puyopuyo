@@ -23,6 +23,7 @@ class Stage:
         self.score = 0
         self.combo = 0
         self.same_time = 0
+        self.count = 0
 
 
     # 座標からぷよの色を取得　& 座標が有効か確認
@@ -51,6 +52,7 @@ class Stage:
                     self.same_time += 1
                     # 削除した場合はscene3に移行(ぷよが消えた分を下に詰める)
                     next_scene = 3
+        self.top_position()
         return next_scene
 
 
@@ -61,6 +63,7 @@ class Stage:
         else:
             color = self.get_color(x, y)
             self.field[y][x] = 0
+            self._delete_block(x, y)
             if self.get_color(x-1, y) == color:
                 self._delete_group(x-1, y)
             if self.get_color(x+1, y) == color:
@@ -85,14 +88,15 @@ class Stage:
             count = 1
             searched_list.append([x, y])
             color = self.get_color(x, y)
-            if self.get_color(x-1, y) == color:
-                count += self._counter(x-1, y, searched_list)
-            if self.get_color(x+1, y) == color:
-                count += self._counter(x+1, y, searched_list)
-            if self.get_color(x, y-1) == color:
-                count += self._counter(x, y-1, searched_list)
-            if self.get_color(x, y+1) == color:
-                count += self._counter(x, y+1, searched_list)
+            if not color == 5:
+                if self.get_color(x-1, y) == color:
+                    count += self._counter(x-1, y, searched_list)
+                if self.get_color(x+1, y) == color:
+                    count += self._counter(x+1, y, searched_list)
+                if self.get_color(x, y-1) == color:
+                    count += self._counter(x, y-1, searched_list)
+                if self.get_color(x, y+1) == color:
+                    count += self._counter(x, y+1, searched_list)
             return count
 
 
@@ -128,9 +132,9 @@ class Stage:
                 if self.field[y][x] != 0:
                     pos = y
             top_position_list.append(pos - 1)
-        return top_position_list
+        self.top_position_list = top_position_list
 
-    
+
     # 全消しボーナス
     def all_clear(self):
         all_clear = True
@@ -140,10 +144,39 @@ class Stage:
                     all_clear = False
         if all_clear == True:
             self.score += 1000
+
+    
+    # お邪魔ぷよ
+    def block(self):
+        self.count += 1
+        if self.count == 10:
+            for (pos_x,pos_y) in enumerate(self.top_position_list):
+                if self.score > 3000:
+                    if pos_y >= 2:
+                        self.field[pos_y][pos_x] = 5
+                        self.field[pos_y-1][pos_x] = 5
+                    elif pos_y >= 1:
+                        self.field[pos_y][pos_x] = 5
+                else:
+                    self.field[pos_y][pos_x] = 5
+            self.count = 0
+
+
+    # ぷよが消えた時に周りのお邪魔ぷよも消す
+    def _delete_block(self, pos_x, pos_y):
+        if pos_x > 0:
+            if self.field[pos_y][pos_x-1] == 5:
+                self.change_puyo(pos_x-1, pos_y, 0)
+        if pos_y < 13:
+            if self.field[pos_y+1][pos_x] == 5:
+                self.change_puyo(pos_x, pos_y+1, 0)
+        if pos_x < 5:
+            if self.field[pos_y][pos_x+1] == 5:
+                self.change_puyo(pos_x+1, pos_y, 0)
+        if pos_y > 0:
+            if self.field[pos_y-1][pos_x] == 5:
+                self.change_puyo(pos_x, pos_y-1, 0)
         
-
-
-
 
 class ControlPuyo:
     def __init__(self):
@@ -181,7 +214,7 @@ class ControlPuyo:
                     stage.field[int(pos_y)][int(pos_x)] = self.color[i]
                     del self.color[i]
                     del self.position[i]
-                    stage.top_position_list = stage.top_position()
+                    stage.top_position()
             if len(self.position) == 0:
                 next_scene = 2
         return next_scene
@@ -280,24 +313,15 @@ class ControlPuyo:
         stage.combo = 0
         self.color = self.next_puyo1_color
         self.position = [[2, 1], [2, 0]]
+        self.angle = 0
         self.next_puyo1_color = self.next_puyo2_color
         self.next_puyo2_color = [random.randint(1, 4), random.randint(1, 4)]
-    
+
 
     # ゲームオーバー
     def game_over(self, stage):
-        stage.top_position_list = stage.top_position()
+        stage.top_position()
         if stage.top_position_list[2] < 2:
             return True
         else:
             return False
-
-
-class NextPuyo:
-    def __init__(self):
-        self.next_puyo1 = [random.randint(1,4), random.randint(1,4)]
-        self.next_puyo2 = [random.randint(1,4), random.randint(1,4)]
-
-    def update(self):
-        self.next_puyo1 = self.next_puyo2
-        self.next_puyo2 = [random.randint(1,4), random.randint(1,4)]
